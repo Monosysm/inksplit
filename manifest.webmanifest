@@ -1,0 +1,17 @@
+{
+  "id": "./InkSplit.html",
+  "name": "InkSplit",
+  "short_name": "InkSplit",
+  "description": "Pemecah warna untuk sablon — film positif per tinta, siap cetak. Gratis, jalan di komputer sendiri, tanpa akun.",
+  "lang": "id",
+  "start_url": "./InkSplit.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#111110",
+  "theme_color": "#111110",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
