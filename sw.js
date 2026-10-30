@@ -4,7 +4,7 @@
    Aset  : manifest & ikon = cache-first.
    VERSION diisi skrip rilis (pwa/release.mjs) dengan versi app: berubah tiap rilis → browser memasang SW baru → app menampilkan
    "UPDATE READY · Reload" (pesan 'skipWaiting'). Nama cache lama (inksplit-*) dibuang saat SW baru aktif. */
-const VERSION = '1.2.1-2adad3e1';
+const VERSION = '1.2.1-50e7227e';
 const CACHE = 'inksplit-' + VERSION;
 const ASSETS = ['./', './InkSplit.html', './manifest.webmanifest', './icons/icon-192.png', './icons/icon-512.png', './icons/icon-maskable-512.png'];
 

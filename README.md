@@ -7,9 +7,9 @@ halftone dibuat app, ekspor PDF / TIFF 1-bit / PNG 600 DPI. Gratis, tanpa akun, 
 
 ## Pasang sebagai aplikasi (disarankan)
 1. Buka alamat di atas dengan **Google Chrome** atau **Microsoft Edge** di komputer.
-2. Klik tab **INSTALL APP** di tengah atas layar (atau menu ⋮ → *Cast, save, and share* → *Install page as app*).
+2. Klik **Install app** di tengah atas layar (atau menu ⋮ → *Cast, save, and share* → *Install page as app*).
 3. InkSplit muncul di Start Menu / desktop, terbuka di jendela sendiri, dan tetap jalan **tanpa internet**.
-   Pembaruan masuk otomatis; bila ada versi baru saat app terbuka, muncul **UPDATE READY** — klik untuk memuat ulang.
+   Pembaruan masuk otomatis; bila ada versi baru saat app terbuka, muncul **Update ready · Reload** di tengah atas — klik untuk memuat ulang.
 
 Library tinta & setelan tersimpan di komputer kamu (browser), terikat pada alamat di atas.
 

@@ -101,7 +101,6 @@
   --hover: #222221;
   --charge: #FF4614;          /* oranye brand: aksi utama + pil tab aktif SAJA */
   --brand-mark: var(--charge); /* v1.3 tanda logo */
-  --inst-h: 44px; --inst-r: 14px; --inst-bw: 1.5px; /* v1.3 tab install (PWA) */
   --on-charge: #140A05;       /* teks gelap di atas oranye (5,71:1) */
   --charge-hover: #E83E10;
   --ok: #3DBF74;
@@ -153,7 +152,7 @@
   --pane-min: 120px;          /* tinggi minimum panel dok yang terbuka. SAMA dengan IS.layout.K.PANE_MIN */
   --dis-op: .45;
   /* v1.1 token komponen (Plan-temp §0): gaya baru = token di sini + sedikit kelas, tanpa angka lepas di aturan komponen. */
-  --ic-sm: 16px; --ic-sm-stroke: 1.9; --ic-sm-fg: var(--mut);      /* ikon kecil (?) (i) mata Solo ↺ — terbaca di zoom 90% */
+  --ic-sm: 16px; --ic-sm-stroke: 2.2; --ic-sm-fg: var(--mut); --ic-disc-fg: #C4C3BC;      /* ikon kecil (?) (i) mata Solo ↺ — terbaca di zoom 90% */
   --ob-sep-gap: 6px;                                               /* jarak ekstra kiri-kanan garis pemisah Options bar */
   --item-bg: color-mix(in srgb, var(--card-2) 60%, transparent); --item-bg-sel: var(--card-2); --item-line-sel: var(--line-2);
   --item-gap: 6px; --item-pad: 8px;                                /* item daftar: kartu film (Per film), baris Films */
@@ -193,7 +192,9 @@ button { cursor: pointer; }
 .mut { color: var(--mut); }
 .faint { color: var(--faint); }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-.ic { width: 18px; height: 18px; flex: 0 0 auto; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.ic { width: 18px; height: 18px; flex: 0 0 auto; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }   /* Lucide: garis 2 di grid 24 */
+.ic.disc { fill: currentColor; stroke: none; color: var(--ic-disc-fg); }                       /* (?) (i) isi penuh */
+:hover > .ic.disc, .open > .ic.disc { color: var(--ink); }
 
 /* =========================== OVERLAY SCROLL ===========================
    Port dari SysMgmt v1.2 (ui/overlay-scroll.ts + styles/base.css). Bar native disembunyikan TOTAL;
@@ -240,20 +241,17 @@ button { cursor: pointer; }
   transition: background-color var(--t-fast) ease, border-color var(--t-fast) ease;
 }
 .brand:hover { background: var(--hover); border-color: var(--line-2); }
-/* v1.3 PWA: tab install = tab map folder TERBALIK menggantung dari tepi atas jendela; garis aksen (satu aksi utama saat tampil). Sudut atas melebar
-   ke luar memakai trik bayangan yang sama dengan .ftab.on::before/::after. Kotak lengkung = r × r tepat di luar tepi tab (garis kanannya MENIMPA garis tepi
-   tab — jangan digeser setebal garis, nanti garis patah di sudut atas). */
-.inst-tab { position: fixed; top: 0; left: 50%; transform: translateX(-50%); z-index: var(--z-pop); display: flex; align-items: center; gap: 2px;
-  height: var(--inst-h); padding: 0 6px 0 8px; background: var(--bg); border: var(--inst-bw) solid var(--charge); border-top: 0; border-radius: 0 0 var(--inst-r) var(--inst-r); }
-.inst-tab[hidden] { display: none; }
-.inst-tab::before, .inst-tab::after { content: ''; position: absolute; top: 0; width: var(--inst-r); height: var(--inst-r); border: var(--inst-bw) solid var(--charge); border-bottom: 0; pointer-events: none; }
-.inst-tab::before { left: calc(-1 * var(--inst-r)); border-left: 0; border-top-right-radius: var(--inst-r); box-shadow: calc(var(--inst-r) / 2) calc(var(--inst-r) / -2) 0 calc(var(--inst-r) / 2) var(--bg); }
-.inst-tab::after { right: calc(-1 * var(--inst-r)); border-right: 0; border-top-left-radius: var(--inst-r); box-shadow: calc(var(--inst-r) / -2) calc(var(--inst-r) / -2) 0 calc(var(--inst-r) / 2) var(--bg); }
-.inst-go { display: inline-flex; align-items: center; gap: 8px; height: 32px; padding: 0 12px; border: 0; border-radius: var(--r-row); background: transparent; color: var(--ink);
-  font-size: var(--type-body); font-weight: 600; letter-spacing: .06em; cursor: pointer; transition: background-color var(--t-fast) ease; }
+/* v1.3 PWA: notifikasi Install / Update = PIL di tengah topbar (pusat jendela), garis aksen tipis (satu aksi utama saat tampil). Disembunyikan bila
+   menabrak tab Separate/Output/Ink atau Open/Save (IS.install.render). */
+.topbar { position: relative; }
+.inst-pill { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); display: flex; align-items: center; gap: 2px; height: 34px; padding: 0 4px 0 2px;
+  background: var(--card); border: 1px solid var(--charge); border-radius: 999px; white-space: nowrap; }
+.inst-pill[hidden] { display: none; }
+.inst-go { display: inline-flex; align-items: center; gap: 8px; height: 28px; padding: 0 12px 0 10px; border: 0; border-radius: 999px; background: transparent; color: var(--ink);
+  font-size: var(--type-body); font-weight: 600; cursor: pointer; transition: background-color var(--t-fast) ease; }
 .inst-go:hover { background: var(--hover); }
-.inst-go .ic { color: var(--charge); }
-.inst-x { display: grid; place-items: center; width: 26px; height: 26px; padding: 0; border: 0; border-radius: var(--r-chip); background: transparent; color: var(--mut); cursor: pointer; }
+.inst-go .ic { width: 16px; height: 16px; color: var(--charge); }
+.inst-x { display: grid; place-items: center; width: 24px; height: 24px; padding: 0; border: 0; border-radius: 999px; background: transparent; color: var(--mut); cursor: pointer; }
 .inst-x:hover { background: var(--hover); color: var(--ink); }
 .inst-x .ic { width: 14px; height: 14px; }
 .inst-x[hidden] { display: none; }
@@ -1318,6 +1316,11 @@ body[data-tool="brush"] .stage-view.has-doc.space-pan, body[data-tool="eraser"] 
       <button role="tab" data-tab="films" title="Output — film siap cetak: kertas, posisi desain, tanda registrasi, halftone, lalu ekspor PDF/TIFF/PNG">Output</button>
       <button role="tab" data-tab="ink" title="Ink — library tinta, kalkulator racik, kalibrasi, Monotone™ Book, set tinta dasar">Ink</button>
     </nav>
+    <!-- v1.3 PWA: pil Install / Update di tengah topbar (IS.install) -->
+    <div class="inst-pill" id="install-tab" role="region" aria-label="Install InkSplit" hidden>
+      <button type="button" class="inst-go" id="install-go" title="Pasang InkSplit sebagai aplikasi: ikon di Start Menu/desktop, jendela sendiri, tetap jalan tanpa internet"><svg class="ic" data-ic="download"></svg><span id="install-label">Install app</span></button>
+      <button type="button" class="inst-x" id="install-x" aria-label="Not now" title="Nanti saja — tak muncul lagi 14 hari (Install tetap ada di Settings › General)"><svg class="ic" data-ic="x"></svg></button>
+    </div>
     <div class="spacer"></div>
     <div class="top-actions">
       <button class="btn ghost" id="btn-open" title="Buka gambar (PNG/JPG) atau proyek .inks (Ctrl+O)"><svg class="ic" data-ic="folder"></svg><span class="t">Open</span></button>
@@ -1884,11 +1887,6 @@ body[data-tool="brush"] .stage-view.has-doc.space-pan, body[data-tool="eraser"] 
   <p class="hint" id="source-hint"></p>
   <p class="hint" id="design-hint"></p>
 </div></div></div>
-<!-- v1.3 PWA: tab INSTALL APP / UPDATE READY menggantung dari tepi atas, di ruang kosong tengah topbar (IS.install) -->
-<div class="inst-tab" id="install-tab" role="region" aria-label="Install InkSplit" hidden>
-  <button type="button" class="inst-go" id="install-go" title="Pasang InkSplit sebagai aplikasi: ikon di Start Menu/desktop, jendela sendiri, tetap jalan tanpa internet"><svg class="ic" data-ic="download"></svg><span id="install-label">INSTALL APP</span></button>
-  <button type="button" class="inst-x" id="install-x" aria-label="Not now" title="Nanti saja — tab ini tak muncul lagi 14 hari (Install tetap ada di Settings › General)"><svg class="ic" data-ic="x"></svg></button>
-</div>
 <div id="overlay-host"></div>
 <div id="toast-host" aria-live="polite"></div>
 <div id="mt-print" aria-hidden="true"></div>
@@ -5478,64 +5476,73 @@ self.onmessage = function (ev) {
 
   /* ============================== ikon ============================== */
   /* Ikon garis sendiri (viewBox 24). Dipasang ke setiap <svg data-ic="nama">. */
+  /* v1.3 ikon = Lucide (ISC, lucide.dev; pilihan user 2026-10-30 dari galeri) — garis 24×24, ujung & sudut membulat, satu path per ikon
+     (circle/rect/line Lucide dikonversi ke path). Nama ikon TETAP (pemanggil tak berubah). hwoff, solid, dots = buatan app di grid & tebal yang sama. */
   var ICONS = {
-    folder: 'M3 6.5A1.5 1.5 0 0 1 4.5 5H9l2 2h8.5A1.5 1.5 0 0 1 21 8.5v9a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 17.5z',
-    save: 'M5 4h11l3 3v13H5z M8 4v5h7V4 M8 20v-6h8v6',
-    download: 'M12 4v11 M7 10l5 5 5-5 M5 20h14',
-    upload: 'M12 16V5 M7 10l5-5 5 5 M5 20h14',
-    gear: 'M12 15.2a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4z M12 2.5v3 M12 18.5v3 M2.5 12h3 M18.5 12h3 M5.3 5.3l2.1 2.1 M16.6 16.6l2.1 2.1 M5.3 18.7l2.1-2.1 M16.6 7.4l2.1-2.1',
-    hand: 'M8 13V6a1.5 1.5 0 0 1 3 0v5 M11 11V4.5a1.5 1.5 0 0 1 3 0V11 M14 11V6a1.5 1.5 0 0 1 3 0v7.5a6.5 6.5 0 0 1-6.5 6.5h-.8a6 6 0 0 1-4.9-2.6L3.6 14.6a1.5 1.5 0 0 1 2.4-1.8L8 15',
-    pipette: 'M14 6l4 4 M16.5 3.5a2.1 2.1 0 0 1 3 3L17 9l-3-3z M14.5 7.5l-8.5 8.5V19h3l8.5-8.5',
-    brush: 'M19 3.5a2 2 0 0 1 2.5 2.5L12.5 15 10 12.5z M9.2 13.5c-2 0-3.4 1.4-3.4 3.4 0 1.3-.8 2.1-2.3 2.6 1.3 1 2.9 1.5 4.6 1.2 2.2-.4 3.7-2.3 3.4-4.5',
-    eraser: 'M4 15.5l9-9a2 2 0 0 1 2.8 0l3.7 3.7a2 2 0 0 1 0 2.8L13 19.5H8z M9 10.5l5.5 5.5 M8 19.5h12',
-    sparkle: 'M12 3.5l2 6.5 6.5 2-6.5 2-2 6.5-2-6.5-6.5-2 6.5-2z',
-    film: 'M4 4h16v16H4z M8 4v16 M16 4v16 M4 8h4 M4 12h4 M4 16h4 M16 8h4 M16 12h4 M16 16h4',
-    panel: 'M4 5h16v14H4z M14 5v14',
-    panelL: 'M4 5h16v14H4z M10 5v14',
+    folder: 'M6 14l1.5-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.54 6a2 2 0 0 1-1.95 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H18a2 2 0 0 1 2 2v2',   // Open
+    save: 'M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7 M7 3v4a1 1 0 0 0 1 1h7',   // Save
+    download: 'M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4 M7 10L12 15L17 10 M12 15L12 3',
+    upload: 'M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4 M17 8L12 3L7 8 M12 3L12 15',
+    gear: 'M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z M9 12a3 3 0 1 0 6 0a3 3 0 1 0 -6 0',   // Settings
+    hand: 'M18 11V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2 M14 10V4a2 2 0 0 0-2-2a2 2 0 0 0-2 2v2 M10 10.5V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2v8 M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15',
+    pipette: 'M2 22l1-1h3l9-9 M3 21v-3l9-9 M15 6l3.4-3.4a2.1 2.1 0 1 1 3 3L18 9l.4.4a2.1 2.1 0 1 1-3 3l-3.8-3.8a2.1 2.1 0 1 1 3-3l.4.4Z',
+    brush: 'M9.06 11.9l8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.08 M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02z',
+    eraser: 'M7 21l-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21 M22 21H7 M5 11l9 9',
+    panel: 'M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2Z M15 3v18',
+    panelL: 'M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2Z M9 3v18',
     chev: 'M6 9l6 6 6-6',
-    more: 'M5 12h.01 M12 12h.01 M19 12h.01',
-    window: 'M4 4h7v7H4z M13 4h7v7h-7z M4 13h7v7H4z M13 13h7v7h-7z',
-    check: 'M5 12.5l4.5 4.5L19 7.5',
-    lock: 'M7.5 11V8a4.5 4.5 0 0 1 9 0v3 M5.5 11h13v9h-13z',
-    unlock: 'M7.5 11V8a4.5 4.5 0 0 1 8.7-1.6 M5.5 11h13v9h-13z',
-    reset: 'M4.5 12a7.5 7.5 0 1 0 2.2-5.3 M4.5 4.5v4h4',
-    dots: 'M3.4 6a2.6 2.6 0 1 0 5.2 0a2.6 2.6 0 1 0 -5.2 0M10 6a2 2 0 1 0 4 0a2 2 0 1 0 -4 0M16.6 6a1.4 1.4 0 1 0 2.8 0a1.4 1.4 0 1 0 -2.8 0M4 12a2 2 0 1 0 4 0a2 2 0 1 0 -4 0M10.6 12a1.4 1.4 0 1 0 2.8 0a1.4 1.4 0 1 0 -2.8 0M17.1 12a0.9 0.9 0 1 0 1.8 0a0.9 0.9 0 1 0 -1.8 0M4.6 18a1.4 1.4 0 1 0 2.8 0a1.4 1.4 0 1 0 -2.8 0M11.1 18a0.9 0.9 0 1 0 1.8 0a0.9 0.9 0 1 0 -1.8 0M17.5 18a0.5 0.5 0 1 0 1 0a0.5 0.5 0 1 0 -1 0',
-    info: 'M12 20.5a8.5 8.5 0 1 0 0-17 8.5 8.5 0 0 0 0 17z M12 11v5 M12 8h.01',
-    help: 'M12 20.5a8.5 8.5 0 1 0 0-17 8.5 8.5 0 0 0 0 17z M9.7 9.6a2.4 2.4 0 0 1 4.6.8c0 1.6-2.3 2-2.3 3.6 M12 16.9h.01',
-    x: 'M6 6l12 12 M18 6L6 18',
-    eye: 'M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12z M12 14.9a2.9 2.9 0 1 0 0-5.8 2.9 2.9 0 0 0 0 5.8z',
-    eyeoff: 'M3 3l18 18 M10.4 6.1A9.7 9.7 0 0 1 12 5.5c6.4 0 10 6.5 10 6.5a17 17 0 0 1-3.2 3.9 M6.4 7.5A16.7 16.7 0 0 0 2 12s3.6 6.5 10 6.5a9.6 9.6 0 0 0 4-.9 M9.8 9.8a2.9 2.9 0 0 0 4.4 4.4',
-    solo: 'M12 4a8 8 0 1 0 0 16 8 8 0 0 0 0-16z M12 4a8 8 0 0 1 0 16z',
-    grip: 'M9 6h.01 M15 6h.01 M9 12h.01 M15 12h.01 M9 18h.01 M15 18h.01',
-    edit: 'M4 20h4L19 9a2.1 2.1 0 0 0-4-4L4 16z M14 6l4 4',
-    trash: 'M5 7h14 M9 7V4.5h6V7 M7 7l1 13h8l1-13',
-    solid: 'M5 5h14v14H5z',                                          // blok tinta rata (diisi, lihat FILLED)
-    hw: 'M12 3.5l1.9 5.4 5.6 2.1-5.6 2.1L12 18.5l-1.9-5.4L4.5 11l5.6-2.1z M18.5 16l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7z',
-    hwoff: 'M12 3.5l1.9 5.4 5.6 2.1-5.6 2.1L12 18.5l-1.9-5.4L4.5 11l5.6-2.1z M3.5 3.5l17 17',
-    book: 'M5 5.5A2.5 2.5 0 0 1 7.5 3H19v14H7.5A2.5 2.5 0 0 0 5 19.5z M5 19.5A2.5 2.5 0 0 0 7.5 22H19v-5 M9 7.5h6',
-    bolt: 'M13 3L5.5 13.5H11L10 21l7.5-10.5H12z',
-    lib: 'M4 5h4v4H4z M11 7h9 M4 15h4v4H4z M11 17h9',                  // Library: daftar warna
-    plus: 'M12 5v14 M5 12h14',
+    more: 'M11 12a1 1 0 1 0 2 0a1 1 0 1 0 -2 0 M18 12a1 1 0 1 0 2 0a1 1 0 1 0 -2 0 M4 12a1 1 0 1 0 2 0a1 1 0 1 0 -2 0',
+    check: 'M20 6 9 17l-5-5',
+    lock: 'M5 11h14a2 2 0 0 1 2 2v7a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-7a2 2 0 0 1 2 -2Z M7 11V7a5 5 0 0 1 10 0v4',
+    unlock: 'M5 11h14a2 2 0 0 1 2 2v7a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-7a2 2 0 0 1 2 -2Z M7 11V7a5 5 0 0 1 9.9-1',
+    reset: 'M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8 M3 3v5h5',
+    info: 'M2 12a10 10 0 1 0 20 0a10 10 0 1 0 -20 0 M12 16v-4 M12 8h.01',
+    help: 'M2 12a10 10 0 1 0 20 0a10 10 0 1 0 -20 0 M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3 M12 17h.01',
+    x: 'M18 6 6 18 M6 6l12 12',
+    eye: 'M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0 M9 12a3 3 0 1 0 6 0a3 3 0 1 0 -6 0',
+    eyeoff: 'M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49 M14.084 14.158a3 3 0 0 1-4.242-4.242 M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143 M2 2l20 20',
+    solo: 'M2 12a10 10 0 1 0 20 0a10 10 0 1 0 -20 0 M12 18a6 6 0 0 0 0-12v12z',   // Solo
+    grip: 'M8 12a1 1 0 1 0 2 0a1 1 0 1 0 -2 0 M8 5a1 1 0 1 0 2 0a1 1 0 1 0 -2 0 M8 19a1 1 0 1 0 2 0a1 1 0 1 0 -2 0 M14 12a1 1 0 1 0 2 0a1 1 0 1 0 -2 0 M14 5a1 1 0 1 0 2 0a1 1 0 1 0 -2 0 M14 19a1 1 0 1 0 2 0a1 1 0 1 0 -2 0',
+    edit: 'M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z M15 5l4 4',
+    trash: 'M3 6h18 M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6 M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2 M10 11L10 17 M14 11L14 17',
+    bolt: 'M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z',   // Flash cure
+    lib: 'M11 17a4 4 0 0 1-8 0V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2Z M16.7 13H19a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2H7 M 7 17h.01 M11 8l2.3-2.3a2.4 2.4 0 0 1 3.404.004L18.6 7.6a2.4 2.4 0 0 1 .026 3.434L9.9 19.8',   // Ink library
+    plus: 'M5 12h14 M12 5v14',
     minus: 'M5 12h14',
-    shirt: 'M8.6 4 4 6.4 2.6 10.6l3 1.3V20h12.8v-8.1l3-1.3L20 6.4 15.4 4c-.5 1.5-1.9 2.5-3.4 2.5S9.1 5.5 8.6 4z',     // v1.3: Garment (warna kaos)
-    fan: 'M5 3.5h4.5v14a2.25 2.25 0 0 1-4.5 0z M9.5 7.2l3.8-2.2 5 8.7-8.8 5.1 M10.4 19.2l8.9-5.1 1.2 2.1a2.2 2.2 0 0 1-.8 3l-7.3 1.1 M7.25 17.5h.01'   // Monotone™ Book: kipas warna
+    shirt: 'M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z',   // Garment
+    fan: 'M13 6.5a0.5 0.5 0 1 0 1 0a0.5 0.5 0 1 0 -1 0 M17 10.5a0.5 0.5 0 1 0 1 0a0.5 0.5 0 1 0 -1 0 M8 7.5a0.5 0.5 0 1 0 1 0a0.5 0.5 0 1 0 -1 0 M6 12.5a0.5 0.5 0 1 0 1 0a0.5 0.5 0 1 0 -1 0 M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z',   // Monotone™ Book
+    hw: 'M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z M20 3v4 M22 5h-4 M4 17v2 M5 18H3',   // Highlight white
+    hwoff: 'M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z M20 3v4 M22 5h-4 M4 17v2 M5 18H3 M2 2l20 20',   // Highlight white mati = sparkles + coret
+    solid: 'M5 5h14v14H5z',                                          // blok tinta rata (diisi, lihat FILLED)
+    dots: 'M3.4 6a2.6 2.6 0 1 0 5.2 0a2.6 2.6 0 1 0 -5.2 0M10 6a2 2 0 1 0 4 0a2 2 0 1 0 -4 0M16.6 6a1.4 1.4 0 1 0 2.8 0a1.4 1.4 0 1 0 -2.8 0M4 12a2 2 0 1 0 4 0a2 2 0 1 0 -4 0M10.6 12a1.4 1.4 0 1 0 2.8 0a1.4 1.4 0 1 0 -2.8 0M17.1 12a0.9 0.9 0 1 0 1.8 0a0.9 0.9 0 1 0 -1.8 0M4.6 18a1.4 1.4 0 1 0 2.8 0a1.4 1.4 0 1 0 -2.8 0M11.1 18a0.9 0.9 0 1 0 1.8 0a0.9 0.9 0 1 0 -1.8 0M17.5 18a0.5 0.5 0 1 0 1 0a0.5 0.5 0 1 0 -1 0'
   };
   var FILLED = { solid: 1, dots: 1 };                               // ikon bidang isi (bukan garis)
+  /* (?) dan (i) = versi ISI: lingkaran penuh dengan tanda dilubangi (mask) — jelas terbaca di 16 px (permintaan user). id mask unik per ikon. */
+  var DISC = { help: 'M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3 M12 17h.01', info: 'M12 16v-4 M12 8h.01' }, discN = 0;
+  function fillIcon(svg, name) {
+    var NS = 'http://www.w3.org/2000/svg';
+    if (DISC[name]) {
+      var id = 'ic-disc-' + (++discN), m = document.createElementNS(NS, 'mask'), r = document.createElementNS(NS, 'rect'), g = document.createElementNS(NS, 'path'), c = document.createElementNS(NS, 'circle');
+      m.setAttribute('id', id); r.setAttribute('width', '24'); r.setAttribute('height', '24'); r.setAttribute('fill', '#fff');
+      g.setAttribute('d', DISC[name]); g.setAttribute('fill', 'none'); g.setAttribute('stroke', '#000'); g.setAttribute('stroke-width', '2.6'); g.setAttribute('stroke-linecap', 'round'); g.setAttribute('stroke-linejoin', 'round');
+      m.appendChild(r); m.appendChild(g); c.setAttribute('cx', '12'); c.setAttribute('cy', '12'); c.setAttribute('r', '10.5'); c.setAttribute('mask', 'url(#' + id + ')');
+      svg.appendChild(m); svg.appendChild(c); svg.classList.add('disc'); return;
+    }
+    var p = document.createElementNS(NS, 'path'); p.setAttribute('d', ICONS[name] || ''); svg.appendChild(p);
+  }
   U.icon = function (name) {
     var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     svg.setAttribute('class', FILLED[name] ? 'ic fill' : 'ic'); svg.setAttribute('viewBox', '0 0 24 24'); svg.setAttribute('aria-hidden', 'true');
-    var p = document.createElementNS('http://www.w3.org/2000/svg', 'path'); p.setAttribute('d', ICONS[name] || ''); svg.appendChild(p);
+    fillIcon(svg, name);
     return svg;
   };
   U.hydrateIcons = function (root) {
     U.$$('svg[data-ic]', root).forEach(function (svg) {
       svg.setAttribute('viewBox', '0 0 24 24'); svg.setAttribute('aria-hidden', 'true');
-      if (!svg.firstChild) {
-        var p = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-        p.setAttribute('d', ICONS[svg.getAttribute('data-ic')] || ''); svg.appendChild(p);
-      }
+      if (!svg.firstChild) fillIcon(svg, svg.getAttribute('data-ic'));
     });
   };
+  U.iconNames = function () { return Object.keys(ICONS); };
 
   /* ============================== bus ============================== */
   IS.bus = (function () {
@@ -7132,9 +7139,9 @@ self.onmessage = function (ev) {
     }
     return { init: init, enabled: function () { return on; } };
   })();
-  /* Tab INSTALL APP / UPDATE READY (tengah atas). Tak mengganggu: "install" tampil HANYA bila browser menembakkan beforeinstallprompt (Chrome/Edge
+  /* Pil Install app / Update ready (tengah topbar). Tak mengganggu: "install" tampil HANYA bila browser menembakkan beforeinstallprompt (Chrome/Edge
      tidak menembakkannya bila app sudah terpasang) DAN bukan jendela app terpasang (display-mode standalone) DAN tidak ditunda (× = 14 hari).
-     "update" tampil bila service worker baru menunggu. Tab hanya tampil bila muat di ruang kosong antara tab Separate/Output/Ink dan Open/Save. */
+     "update" tampil bila service worker baru menunggu. Pil hanya tampil bila muat di ruang kosong antara tab Separate/Output/Ink dan Open/Save. */
   IS.install = (function () {
     var deferred = null, waiting = null, els = null, probe = null, KEY = 'inksplit_install_snooze', DAYS = 14;
     function standalone() { return probe ? probe() : !!((window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone); }
@@ -7146,7 +7153,7 @@ self.onmessage = function (ev) {
       if (!els) return;
       var m = mode(), el = els.el;
       if (!m) { el.hidden = true; return; }
-      els.label.textContent = m === 'update' ? 'UPDATE READY · RELOAD' : 'INSTALL APP';
+      els.label.textContent = m === 'update' ? 'Update ready · Reload' : 'Install app';
       els.go.title = m === 'update' ? 'Versi baru InkSplit sudah diunduh — klik untuk memuat ulang (pekerjaan yang belum disimpan tetap dipulihkan dari draft)'
         : 'Pasang InkSplit sebagai aplikasi: ikon di Start Menu/desktop, jendela sendiri, tetap jalan tanpa internet';
       els.x.hidden = m === 'update';
@@ -7250,8 +7257,8 @@ self.onmessage = function (ev) {
         hint = 'Ikon di Start Menu/desktop, jendela sendiri, tetap jalan tanpa internet. Library tinta & setelan ikut terbawa.';
       } else {
         ctl = U.h('span', { class: 'faint', id: 'set-install-state' }, [st === 'standalone' ? 'Installed' : '—']);
-        hint = st === 'standalone' ? 'InkSplit sedang berjalan sebagai aplikasi terpasang. Pembaruan masuk otomatis (UPDATE READY di tengah atas).'
-          : st === 'file' ? 'File yang dibuka langsung dari folder tidak bisa dipasang. Buka ' + IS.WEB_URL + ' di Chrome atau Edge, lalu klik INSTALL APP.'
+        hint = st === 'standalone' ? 'InkSplit sedang berjalan sebagai aplikasi terpasang. Pembaruan masuk otomatis (Update ready di tengah atas).'
+          : st === 'file' ? 'File yang dibuka langsung dari folder tidak bisa dipasang. Buka ' + IS.WEB_URL + ' di Chrome atau Edge, lalu klik Install app di tengah atas.'
           : 'Tombol pasang muncul bila browser mengizinkan (Chrome/Edge). Tidak muncul? App mungkin sudah terpasang — atau pakai menu ⋮ → Cast, save, and share → Install page as app.';
       }
       return setRow('Install app', ctl, hint);
@@ -7349,6 +7356,7 @@ self.onmessage = function (ev) {
           U.h('dt', null, ['Zalando Sans']), U.h('dd', null, ['SIL Open Font License 1.1']),
           U.h('dt', null, ['Mono Spec']), U.h('dd', null, ['Monosysm']),
           U.h('dt', null, ['fflate']), U.h('dd', null, ['MIT · © Arjun Barrett']),
+          U.h('dt', null, ['Lucide icons']), U.h('dd', null, ['ISC · © Lucide Contributors']),
           U.h('dt', null, ['Monotone™ (Beta)']), U.h('dd', null, ['Kubelka–Munk · hex→spektrum: Jakob & Hanika 2019'])
         ]),
         U.h('p', { class: 'hint', style: 'margin:14px 0 0' }, ['Keyboard shortcuts & Reset layout: Settings (ikon roda gigi, atau tekan ?).'])
@@ -18056,9 +18064,10 @@ self.onmessage = function (ev) {
       IS.install.reset(); IS.install.probe(function () { return false; });
       ok(tab.hidden && IS.install.state() !== 'ready', 'tanpa beforeinstallprompt: tab tak tampil');
       var c = { n: 0 }, ev = fake('accepted', c);
-      ok(ev.defaultPrevented && !tab.hidden && /INSTALL APP/.test(tab.textContent) && IS.install.state() === 'ready', 'beforeinstallprompt → tab INSTALL APP (bar mini Chrome ditahan)');
+      ok(ev.defaultPrevented && !tab.hidden && /Install app/.test(tab.textContent) && IS.install.state() === 'ready', 'beforeinstallprompt → pil Install app (bar mini Chrome ditahan)');
       var r = tab.getBoundingClientRect();
-      ok(Math.round(r.top) === 0 && r.left > document.getElementById('tabs').getBoundingClientRect().right && r.right < document.querySelector('.top-actions').getBoundingClientRect().left, 'tengah atas, tak menabrak tab & Open/Save');
+      var tb = document.querySelector('.topbar').getBoundingClientRect();
+      ok(Math.abs((r.left + r.right) / 2 - innerWidth / 2) < 2 && r.top >= tb.top && r.bottom <= tb.bottom && r.left > document.getElementById('tabs').getBoundingClientRect().right && r.right < document.querySelector('.top-actions').getBoundingClientRect().left, 'pil di tengah topbar (pusat jendela), tak menabrak tab & Open/Save');
       document.getElementById('install-go').click(); await wait(20);
       ok(c.n === 1 && tab.hidden, 'klik → dialog pasang browser, tab hilang');
       fake('accepted', c); window.dispatchEvent(new Event('appinstalled'));
@@ -18074,12 +18083,22 @@ self.onmessage = function (ev) {
       ok(sb && sb.closest('.set-pane[data-pane="general"]'), 'Settings › General: tombol Install InkSplit tetap ada walau tab ditunda');
       var n0 = c.n; sb.click(); await wait(20); ok(c.n === n0 + 1, 'tombol Settings memanggil dialog pasang'); IS.ui.closeAll();
       var msgs = []; IS.install.setWaiting({ postMessage: function (m) { msgs.push(m); } });
-      ok(!tab.hidden && /UPDATE READY/.test(tab.textContent) && document.getElementById('install-x').hidden, 'service worker baru menunggu → UPDATE READY (tanpa ×)');
+      ok(!tab.hidden && /Update ready/.test(tab.textContent) && document.getElementById('install-x').hidden, 'service worker baru menunggu → Update ready (tanpa ×)');
       document.getElementById('install-go').click(); ok(msgs.join() === 'skipWaiting', 'klik → SW baru diaktifkan (lalu muat ulang)');
     } finally {
       IS.install.probe(null); IS.install.reset(); IS.ui.closeAll();
       try { if (saved == null) localStorage.removeItem(K); else localStorage.setItem(K, saved); } catch (e) { /* abaikan */ }
     }
+  });
+  test('Ikon v1.3 (Lucide): tiap svg[data-ic] di halaman & tiap nama ikon punya isi; (?) & (i) = versi isi penuh (mask unik); tak ada nama ikon kosong', function () {
+    var U = IS.util;
+    var empty = U.iconNames().filter(function (n) { var sv = U.icon(n); return !sv.querySelector('path[d]:not([d=""]), circle'); });
+    ok(!empty.length, 'semua ikon berisi: ' + empty);
+    var bad = Array.prototype.filter.call(document.querySelectorAll('svg[data-ic]'), function (sv) { return U.iconNames().indexOf(sv.getAttribute('data-ic')) < 0 || !sv.firstChild; }).map(function (sv) { return sv.getAttribute('data-ic'); });
+    ok(!bad.length, 'svg[data-ic] dikenal & terisi: ' + bad);
+    var h1 = U.icon('help'), h2 = U.icon('help'), i1 = U.icon('info');
+    ok(h1.classList.contains('disc') && i1.classList.contains('disc') && h1.querySelector('mask').id !== h2.querySelector('mask').id, '(?) & (i) = lingkaran isi, id mask unik');
+    ok(['window', 'sparkle', 'film', 'book'].every(function (n) { return U.iconNames().indexOf(n) < 0; }), 'ikon lama tak terpakai dibuang');
   });
   test('Logo v1.3 (Branding/Logo): topbar = tanda + wordmark tanpa ® & tanpa teks; About memakai logo yang sama; favicon = tanda baru; kedip: path tertutup berstruktur sama (animasi d), tanda kembali ke logo asli', async function () {
     var b = document.getElementById('btn-about'), mk = b.querySelector('.brand-mark'), lg = b.querySelector('.brand-logo');
