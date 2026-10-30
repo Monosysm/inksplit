@@ -241,13 +241,14 @@ button { cursor: pointer; }
 }
 .brand:hover { background: var(--hover); border-color: var(--line-2); }
 /* v1.3 PWA: tab install = tab map folder TERBALIK menggantung dari tepi atas jendela; garis aksen (satu aksi utama saat tampil). Sudut atas melebar
-   ke luar memakai trik bayangan yang sama dengan .ftab.on::before/::after. */
+   ke luar memakai trik bayangan yang sama dengan .ftab.on::before/::after. Kotak lengkung = r × r tepat di luar tepi tab (garis kanannya MENIMPA garis tepi
+   tab — jangan digeser setebal garis, nanti garis patah di sudut atas). */
 .inst-tab { position: fixed; top: 0; left: 50%; transform: translateX(-50%); z-index: var(--z-pop); display: flex; align-items: center; gap: 2px;
   height: var(--inst-h); padding: 0 6px 0 8px; background: var(--bg); border: var(--inst-bw) solid var(--charge); border-top: 0; border-radius: 0 0 var(--inst-r) var(--inst-r); }
 .inst-tab[hidden] { display: none; }
 .inst-tab::before, .inst-tab::after { content: ''; position: absolute; top: 0; width: var(--inst-r); height: var(--inst-r); border: var(--inst-bw) solid var(--charge); border-bottom: 0; pointer-events: none; }
-.inst-tab::before { left: calc(-1 * var(--inst-r) - var(--inst-bw)); border-left: 0; border-top-right-radius: var(--inst-r); box-shadow: calc(var(--inst-r) / 2) calc(var(--inst-r) / -2) 0 calc(var(--inst-r) / 2) var(--bg); }
-.inst-tab::after { right: calc(-1 * var(--inst-r) - var(--inst-bw)); border-right: 0; border-top-left-radius: var(--inst-r); box-shadow: calc(var(--inst-r) / -2) calc(var(--inst-r) / -2) 0 calc(var(--inst-r) / 2) var(--bg); }
+.inst-tab::before { left: calc(-1 * var(--inst-r)); border-left: 0; border-top-right-radius: var(--inst-r); box-shadow: calc(var(--inst-r) / 2) calc(var(--inst-r) / -2) 0 calc(var(--inst-r) / 2) var(--bg); }
+.inst-tab::after { right: calc(-1 * var(--inst-r)); border-right: 0; border-top-left-radius: var(--inst-r); box-shadow: calc(var(--inst-r) / -2) calc(var(--inst-r) / -2) 0 calc(var(--inst-r) / 2) var(--bg); }
 .inst-go { display: inline-flex; align-items: center; gap: 8px; height: 32px; padding: 0 12px; border: 0; border-radius: var(--r-row); background: transparent; color: var(--ink);
   font-size: var(--type-body); font-weight: 600; letter-spacing: .06em; cursor: pointer; transition: background-color var(--t-fast) ease; }
 .inst-go:hover { background: var(--hover); }
@@ -287,7 +288,9 @@ button { cursor: pointer; }
 .ftab:first-child { border-left: 1px solid var(--line); border-top-left-radius: var(--ftab-r); }
 .ftab:hover { background: var(--ftab-hover); }
 .ftab:focus-visible { box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--focus) 60%, transparent); }
-.ftab.pre { border-top-right-radius: 0; }                          /* tertutup tab depan: tanpa sudut */
+/* Tab tepat di kiri tab depan: menyusup selebar jari-jari DI BALIK lengkung kiri-atas tab depan (margin −r, padding +r → posisi tab tak bergeser),
+   tanpa sudut & tanpa garis kanan — lekuk tab depan terisi tab belakang itu sendiri (juga saat hover), tak ada garis tegak + celah di sambungan. */
+.ftab.pre { border-top-right-radius: 0; border-right-color: transparent; margin-right: calc(-1 * var(--ftab-r)); padding-right: calc(var(--ftab-pad-x) + var(--ftab-r)); }
 .ftab.on { z-index: 2; background: var(--card); border-bottom: 0; padding-bottom: 1px; border-radius: var(--ftab-r) var(--ftab-r) 0 0; }
 .ftab.on:not(:first-child) { margin-left: -1px; border-left: 1px solid var(--line); }
 .ftab.on::before, .ftab.on::after { content: ''; position: absolute; bottom: 0; width: var(--ftab-r); height: var(--ftab-r); border: 1px solid var(--line); border-top: 0; pointer-events: none; }
@@ -7071,26 +7074,35 @@ self.onmessage = function (ev) {
 
   /* ============================== shell ============================== */
   /* ============================== v1.3: logo — mata berkedip acak ==============================
-     Path tanda = file logo asli (Branding/Logo/InkSplit_color_darkBG.svg, dipakai apa adanya saat mata terbuka). Kedip = animasi CSS `d` ke versi
-     "tertutup" (lengkung pupil dipipihkan ke garis kelopaknya — struktur perintah SAMA) ±180 ms, jeda acak 3–8 s, kadang dua kali. Berlaku untuk
-     semua .brand-mark (topbar & About). Mati bila prefers-reduced-motion, tab tersembunyi, atau browser tak bisa menganimasikan `d`. */
+     Path tanda = file logo asli (Branding/Logo/InkSplit_color_darkBG.svg). Kedip = BINGKAI buatan user (Branding/Logo/InkSplit_blink.svg, kolom kiri =
+     versi cincin; dipindah ke koordinat logo, bingkai terbuka = logo asli ±0,02): terbuka → setengah → tertutup → setengah → terbuka (±180 ms), jeda acak
+     3–8 s, kadang dua kali. Lubang tetap transparan → warna latar app tampak di dalamnya. Berlaku untuk semua .brand-mark (topbar & About).
+     Diam bila prefers-reduced-motion atau tab tersembunyi. */
   IS.brand = (function () {
-    var SHUT = 'M186.62 558.6C332.64 604.45 488.09 542.84 543.26 406.18C602.39 259.71 546.85 108.03 412.91 30.98C313.26 -26.35 163.42 -0.81 84.46 80.56C19.46 147.55 -12.25 244.82 4.37 339.77C22.29 442.19 76.16 523.92 186.62 558.6ZM420.52 174.45C408.49 162.55 409.57 151.33 426.12 153.3C430.9 153.87 436.69 155.54 442.62 157.65C477.06 169.92 483.74 151.61 463.54 128.28C447.09 109.29 424.11 89.72 411.11 81.61C320.12 24.77 200.71 30.98 122.79 107.35C77.79 151.45 51.91 207.04 48.05 270.58C47.19 284.8 46.36 303.67 52.32 315.71C76.51 364.49 186.14 252.85 204.42 235.45C226.06 214.85 247.49 195.26 268.74 182.1C318.13 151.51 314.2 177.19 306.77 198.8C286.99 209.42 328.47 209.16 394.08 195.23C464.32 180.31 457.66 171.86 420.52 174.45ZM490.47 291.9C477.15 309.19 452.19 343.8 388.24 355.99C339.25 365.33 277.64 354.97 220.33 352.43C147.26 349.2 76.44 351.24 82.66 402.56C87.48 442.36 151.01 487.35 187.03 502.48C303.28 551.31 450.29 499.94 496.29 390.29C499.87 381.76 517.63 332.75 517.63 307.41C517.63 280.63 500.52 278.85 490.47 291.89Z', timer = 0;
+    var HALF = 'M186.62 558.6C332.64 604.45 488.09 542.84 543.26 406.18C602.39 259.71 546.85 108.03 412.91 30.98C313.26 -26.35 163.43 -0.82 84.46 80.56C19.47 147.55 -12.24 244.82 4.37 339.77C22.3 442.19 76.17 523.92 186.62 558.6ZM467.79 160.69C479.07 160.14 477.02 143.86 463.53 128.28C447.09 109.29 424.1 89.73 411.1 81.61C320.11 24.77 200.7 30.97 122.79 107.34C77.79 151.45 51.9 207.03 48.05 270.57C47.18 284.79 46.35 303.66 52.32 315.7C60.12 331.43 78 332.71 96.43 321.39C165.13 279.2 226.09 240.58 285.86 211.72C289.56 209.93 293.63 210.22 297.04 212.52C300.46 214.82 302.26 218.47 302 222.58C300.44 247.16 309.17 270.71 325.28 286.8C328.03 289.55 329.13 293.19 328.35 297.01C327.58 300.82 325.16 303.75 321.54 305.21C249.4 334.43 168.12 357.15 107.19 361.92C88.41 363.39 80.19 382.13 82.67 402.58C87.49 442.38 151.02 487.37 187.03 502.5C303.28 551.33 450.29 499.96 496.29 390.31C514.81 346.17 524.99 282.44 514.02 231.48C507.93 203.2 484.82 205.97 475.61 215.78C472.17 219.43 468.24 223.15 463.87 226.9C460.79 229.54 456.85 230.31 453 229.03C449.15 227.76 446.45 224.79 445.56 220.83C442.34 206.64 435.93 193 427.2 181.95C424.63 178.69 424.04 174.61 425.59 170.76C427.14 166.91 430.39 164.37 434.5 163.8C445.45 162.29 456.54 161.24 467.79 160.69Z';
+    var SHUT = 'M186.62 558.6C332.64 604.45 488.09 542.84 543.26 406.18C602.39 259.71 546.85 108.03 412.91 30.98C313.26 -26.35 163.43 -0.82 84.46 80.56C19.47 147.55 -12.24 244.82 4.37 339.77C22.3 442.19 76.17 523.92 186.62 558.6ZM467.79 160.69C477.84 155.53 477.02 143.86 463.53 128.28C447.09 109.29 424.1 89.73 411.1 81.61C320.11 24.77 200.7 30.97 122.79 107.34C77.79 151.45 51.9 207.03 48.05 270.57C47.18 284.79 46.35 303.66 52.32 315.7C60.12 331.43 75.77 327.82 96.43 321.39C263.43 269.46 309.35 242.07 467.79 160.69ZM107.19 361.91C88.75 365.79 80.19 382.12 82.67 402.57C87.49 442.38 151.02 487.37 187.03 502.5C303.28 551.33 450.29 499.96 496.29 390.3C514.81 346.17 524.99 282.44 514.02 231.47C507.93 203.19 486.69 208.15 475.61 215.77C410.3 260.72 213.22 339.64 107.19 361.91Z';
+    var OPEN = null, timer = 0, busy = false;
     function calm() { return document.hidden || !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches); }
-    function blinkEl(el) {
-      var open = el.getAttribute('d');
-      try { el.animate([{ d: 'path("' + open + '")' }, { d: 'path("' + SHUT + '")', offset: 0.45 }, { d: 'path("' + SHUT + '")', offset: 0.6 }, { d: 'path("' + open + '")' }], { duration: 180, easing: 'ease-in-out' }); return true; }
-      catch (e) { return false; }
+    function marks() { return U.$$('.brand-mark'); }
+    function open() { if (!OPEN) { var m = U.$('#btn-about .brand-mark'); OPEN = m ? m.getAttribute('d') : ''; } return OPEN; }
+    function frame(d) { marks().forEach(function (el) { el.setAttribute('d', d); }); }
+    function blink() {
+      var n = marks().length; if (!n || busy || !open()) return 0;
+      busy = true; frame(HALF);
+      setTimeout(function () { frame(SHUT); }, 50);
+      setTimeout(function () { frame(HALF); }, 130);
+      setTimeout(function () { frame(OPEN); busy = false; }, 180);
+      return n;
     }
-    function blink() { var n = 0; U.$$('.brand-mark').forEach(function (el) { if (blinkEl(el)) n++; }); return n; }
     function tick() {
-      if (!calm()) { blink(); if (Math.random() < 0.2) setTimeout(blink, 280); }
+      if (!calm()) { blink(); if (Math.random() < 0.2) setTimeout(blink, 320); }
       timer = setTimeout(tick, 3000 + Math.random() * 5000);
     }
     return {
-      supported: function () { return typeof CSS !== 'undefined' && !!CSS.supports && CSS.supports('d', 'path("M0 0")'); },
-      init: function () { clearTimeout(timer); if (this.supported()) timer = setTimeout(tick, 2000 + Math.random() * 3000); },
-      blink: blink, calm: calm, SHUT: SHUT
+      init: function () { open(); clearTimeout(timer); timer = setTimeout(tick, 2000 + Math.random() * 3000); },
+      /** Salinan logo (mata terbuka) untuk About dan tempat lain. */
+      logo: function () { var lg = U.$('#btn-about .brand-logo').cloneNode(true); lg.querySelector('.brand-mark').setAttribute('d', open()); return lg; },
+      blink: blink, calm: calm, isBlinking: function () { return busy; }, FRAMES: { half: HALF, shut: SHUT, open: open }
     };
   })();
 
@@ -7329,7 +7341,7 @@ self.onmessage = function (ev) {
     ];
     function openAbout() {
       var body = U.h('div', null, [
-        U.h('p', { class: 'about-logo', role: 'img', 'aria-label': 'InkSplit v' + IS.APP_VERSION }, [U.$('#btn-about .brand-logo').cloneNode(true), U.h('span', { class: 'num faint', style: 'font-size:14px' }, ['v' + IS.APP_VERSION])]),
+        U.h('p', { class: 'about-logo', role: 'img', 'aria-label': 'InkSplit v' + IS.APP_VERSION }, [IS.brand.logo(), U.h('span', { class: 'num faint', style: 'font-size:14px' }, ['v' + IS.APP_VERSION])]),
         U.h('p', { class: 'mut', style: 'margin:0 0 14px' }, ['Pemecah warna untuk sablon — film positif per tinta, siap cetak.']),
         U.h('p', { class: 'faint', style: 'margin:0 0 14px; font-size:12px' }, ['by Monosysm']),
         U.h('p', { class: 'hint', id: 'about-newer', style: 'margin:0 0 14px' }, ['Proyek .inks dari InkSplit yang LEBIH BARU tetap bisa dibuka, tapi setelan yang belum dikenal versi ini diabaikan (mis. file v1.2 dibuka di v1.1 → dot gain, tiling, dan mesh diabaikan). Saat itu terjadi, InkSplit memberi peringatan — perbarui app supaya hasil film sama.']),
@@ -18073,9 +18085,13 @@ self.onmessage = function (ev) {
     var b = document.getElementById('btn-about'), mk = b.querySelector('.brand-mark'), lg = b.querySelector('.brand-logo');
     ok(lg && mk && b.querySelector('.brand-word') && !/®|InkSplit/.test(b.textContent.trim()) && b.getAttribute('aria-label') === 'InkSplit — About', 'topbar: logo SVG, tanpa teks/®, berlabel');
     ok(Math.abs(lg.getBoundingClientRect().height - 21) < 1 && b.getBoundingClientRect().right < document.getElementById('tabs').getBoundingClientRect().left, 'tinggi 21 px, tak menabrak tab');
-    var cmds = function (d) { return d.replace(/[^A-Za-z]/g, ''); }; ok(cmds(IS.brand.SHUT) === cmds(mk.getAttribute('d')), 'mata tertutup = struktur perintah sama dengan terbuka');
+    var d0 = mk.getAttribute('d'); ok(IS.brand.FRAMES.open() === d0 && IS.brand.FRAMES.half !== d0 && IS.brand.FRAMES.shut !== d0, 'bingkai kedip (setengah, tertutup) dari InkSplit_blink.svg; terbuka = logo asli');
     ok(document.querySelector('link[rel=icon]').href.indexOf('data:image/svg+xml') === 0 && /%23FF4614/i.test(document.querySelector('link[rel=icon]').href), 'favicon = tanda oranye');
-    if (IS.brand.supported()) { ok(IS.brand.blink() >= 1 && mk.getAnimations().length >= 1, 'kedip berjalan'); mk.getAnimations().forEach(function (a) { a.finish(); }); ok(getComputedStyle(mk).d.indexOf('186.62') >= 0, 'sesudah kedip = logo asli'); }
+    ok(IS.brand.blink() >= 1 && mk.getAttribute('d') === IS.brand.FRAMES.half, 'kedip: langsung bingkai setengah');
+    ok(await until(function () { return mk.getAttribute('d') === IS.brand.FRAMES.shut; }, 1000), 'lalu tertutup');
+    ok(await until(function () { return !IS.brand.isBlinking() && mk.getAttribute('d') === d0; }, 1500), 'kembali terbuka = logo asli');
+    IS.brand.blink(); b.click(); var al0 = document.querySelector('.modal[aria-label="About"] .about-logo .brand-mark');
+    ok(al0 && al0.getAttribute('d') === d0, 'About dibuka saat berkedip tetap memakai logo terbuka'); IS.ui.closeAll(); await until(function () { return !IS.brand.isBlinking(); }, 1500);
     b.click(); var al = document.querySelector('.modal[aria-label="About"] .about-logo .brand-mark'); ok(al && al.getAttribute('d') === mk.getAttribute('d'), 'About memakai logo yang sama'); IS.ui.closeAll();
   });
   var FIXTURE_KM1 = ['#F3F3F0', '#D2212A', '#1B1B1C', '#E55A54', '#858587', '#3B9E64', '#6E4B33', '#E32E2F', '#E52D2E', '#339A99', '#D33320', '#3BBF59', '#F17FB6', '#E9625B', '#E7625B'];
